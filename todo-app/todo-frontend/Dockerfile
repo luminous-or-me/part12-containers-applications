@@ -1,8 +1,19 @@
-FROM node:16 as build-stage
+FROM node:16 as test-stage
 
 WORKDIR /usr/src/app
 
 COPY . .
+
+RUN npm ci
+
+ENV CI=test
+RUN npm test
+
+FROM node:16 as build-stage
+
+WORKDIR /usr/src/app
+
+COPY --from=test-stage /usr/src/app .
 
 RUN npm ci
 
